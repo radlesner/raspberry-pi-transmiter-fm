@@ -13,16 +13,13 @@ string type();
 int main(int argc, char **argv) {
 	string freq = frequency();
 	string type_file = type();
-	cout << argv[1] << type_file << endl;
 
 	if(argc > 1) {
-		if(!strcmp(argv[1], "-v") || !strcmp(argv[1], "--memory"))
-			cout << "version 0.1, " << __FILE__ << ", " << __DATE__ << ", " << __TIME__ << endl;
-		else {
+		if(!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version"))
+			cout << "version 0.2, " << __FILE__ << ", " << __DATE__ << ", " << __TIME__ << endl;
+		else
 			system(("sox -t "+type_file+" "+argv[1]+" -t wav - | sudo binaries/pi_fm_rds -freq "+freq+" -audio -").c_str());
-		}
 	}
-	else {}
 
 	return 0;
 }
