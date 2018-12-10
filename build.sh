@@ -1,4 +1,4 @@
 #bin/sh
 
-g++ main.cpp -o transmiter
-cd binaries && make clean && make
+g++ src/*.cpp -o transmiter
+cd src/binaries && make clean && make
