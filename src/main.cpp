@@ -15,11 +15,11 @@ int main(int argc, char **argv) {
 	string type_file = type();
 
 	if(argc > 1) {
-		if(!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version"))
+		if(!strcmp(argv[1], "-v") || !strcmp(argv[1], "--version")) {
 			cout << "version 0.2";
 			cout << "Compiled:" << __FILE__ << ", " << __DATE__ << ", " << __TIME__ << endl;
-		else
-			system(("sox -t "+type_file+" "+argv[1]+" -t wav - | sudo src/binaries/pi_fm_rds -freq "+freq+" -audio -").c_str());
+		}
+		else	system(("sox -t "+type_file+" "+argv[1]+" -t wav - | sudo src/binaries/pi_fm_rds -freq "+freq+" -audio -").c_str());
 	}
 
 	return 0;
