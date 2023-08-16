@@ -1,10 +1,14 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.10.2)
 project(pitransmitter)
+
+# SET SOURCES
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+file(GLOB SOURCES src/*.c)
 
 find_path(SNDFILE_INCLUDE_DIR sndfile.h)
 find_library(SNDFILE_LIBRARY NAMES sndfile)
 
-add_executable(pitransmitter main.cpp)
+add_executable(pitransmitter ${SOURCES})
 
 target_include_directories(pitransmitter PRIVATE ${SNDFILE_INCLUDE_DIR})
 target_link_libraries(pitransmitter PRIVATE ${SNDFILE_LIBRARY})
