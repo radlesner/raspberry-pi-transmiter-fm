@@ -7,8 +7,6 @@ file(GLOB SOURCES src/*.c)
 
 find_package(SndFile REQUIRED)
 include_directories(${SNDFILE_INCLUDE_DIRS})
-target_link_libraries(pi-fm-transmitter ${SNDFILE_LIBRARIES})
-
 
 # BUILD TYPE
 if (NOT CMAKE_BUILD_TYPE)
@@ -42,6 +40,7 @@ set(ICON_DIR "/usr/share/icons/hicolor/")
 
 # PROGRAM
 add_executable(pi-fm-transmitter ${SOURCES})
+target_link_libraries(pi-fm-transmitter ${SNDFILE_LIBRARIES})
 
 # # INSTALL TARGET
 # install(TARGETS pi-fm-transmitter RUNTIME DESTINATION bin)
