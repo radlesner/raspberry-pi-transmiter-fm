@@ -1,79 +1,42 @@
-cmake_minimum_required(VERSION 3.10.2)
-project(pitransmitter)
+cmake_minimum_required(VERSION 3.10)
+project(pi_fm_rds)
 
-# SET SOURCES
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-file(GLOB SOURCES src/*.c)
+set(CMAKE_C_STANDARD 99)
 
-find_path(SNDFILE_INCLUDE_DIR sndfile.h)
-find_library(SNDFILE_LIBRARY NAMES sndfile)
+add_definitions(-Wall -g -O3)
 
-add_executable(pitransmitter ${SOURCES})
+# Enable ARM-specific options only on ARM, and compilation of the app only on ARM
+execute_process(COMMAND uname -m OUTPUT_VARIABLE UNAME OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-target_include_directories(pitransmitter PRIVATE ${SNDFILE_INCLUDE_DIR})
-target_link_libraries(pitransmitter PRIVATE ${SNDFILE_LIBRARY})
+# Determine the hardware platform. Below, pi1 stands for the RaspberryPi 1 (the original one),
+# and pi2 stands for both the RaspberryPi 2 and 3.
+if(${UNAME} STREQUAL "armv6l")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv6 -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=1")
+    set(TARGET "pi1")
+elseif(${UNAME} STREQUAL "armv7l")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv7-a -mtune=arm1176jzf-s -mfloat-abi=hard -mfpu=vfp -ffast-math -DRASPI=2")
+    set(TARGET "pi2")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    set(TARGET "other")
+endif()
 
+if(NOT ${TARGET} STREQUAL "other")
+    add_executable(pi_fm_rds
+            src/rds.c
+            src/waveforms.c
+            src/pi_fm_rds.c
+            src/fm_mpx.c
+            src/control_pipe.c
+            src/mailbox.c)
 
-# cmake_minimum_required(VERSION 3.10.2)
-# project (pi-fm-transmitter)
+    target_link_libraries(pi_fm_rds m sndfile)
+endif()
 
-# # SET SOURCES
-# set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
-# file(GLOB SOURCES src/*.c)
+add_executable(rds_wav
+        src/rds.c
+        src/waveforms.c
+        src/rds_wav.c
+        src/fm_mpx.c)
 
-# find_package(SndFile REQUIRED)
-# include_directories(${SNDFILE_INCLUDE_DIRS})
-
-# # BUILD TYPE
-# if (NOT CMAKE_BUILD_TYPE)
-#     message(STATUS "Build type not specified: Use Release by default")
-#     set(CMAKE_BUILD_TYPE Release)
-#     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
-
-# elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-#     message(STATUS "Build type: Release")
-#     set(CMAKE_BUILD_TYPE Release)
-#     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/release)
-
-# elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#     message(STATUS "Build type: Debug")
-#     set(CMAKE_BUILD_TYPE Debug)
-#     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/debug)
-
-# endif()
-
-# # SETTING COMPILER
-# set(CMAKE_C_STANDARD 11)
-# set(CMAKE_C_STANDARD_REQUIRED ON)
-# set(CMAKE_C_EXTENSIONS OFF)
-# set(CMAKE_C_FLAGS "-Wall -Wextra -pedantic")
-# set(CMAKE_C_FLAGS_DEBUG "-g")
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-# # SETTING RESOURCES
-# set(APPLICATIONS_DIR "/usr/share/applications/")
-# set(ICON_DIR "/usr/share/icons/hicolor/")
-
-# # PROGRAM
-# add_executable(pi-fm-transmitter ${SOURCES})
-# target_link_libraries(pi-fm-transmitter ${SNDFILE_LIBRARIES})
-
-# # INSTALL TARGET
-# install(TARGETS pi-fm-transmitter RUNTIME DESTINATION bin)
-
-# # UNINSTALL TARGET
-# configure_file(
-#     "install_manifest.txt.in"
-#     "${CMAKE_CURRENT_BINARY_DIR}/install_manifest.txt"
-#     IMMEDIATE @ONLY
-# )
-
-# add_custom_target(uninstall
-#     COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
-# )
-
-# configure_file(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/uninstall.cmake.in"
-#     "${CMAKE_CURRENT_BINARY_DIR}/uninstall.cmake"
-#     IMMEDIATE @ONLY
-# )
+target_link_libraries(rds_wav m sndfile)
