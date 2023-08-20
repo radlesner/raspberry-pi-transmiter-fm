@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 project(pi_fm_rds)
 
 set(CMAKE_C_STANDARD 99)
